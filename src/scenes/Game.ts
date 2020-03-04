@@ -1,8 +1,12 @@
 import Phaser from 'phaser'
 
 import { SceneKeys } from '~/consts/SceneKeys'
+import { TextureKeys } from '~/consts/GameKeys'
+
+import LaserModule from '~/game/LaserModule'
 
 import '~/game/PlayerShip'
+import '~/game/LaserPool'
 
 export default class Game extends Phaser.Scene
 {
@@ -10,7 +14,8 @@ export default class Game extends Phaser.Scene
 
 	preload()
     {
-        this.load.image('ship', 'assets/game/playerShip3_blue.png')
+		this.load.image(TextureKeys.PlayerShip, 'assets/game/playerShip3_blue.png')
+		this.load.image(TextureKeys.PlayerLaser, 'assets/game/laserBlue16.png')
     }
 
     create()
@@ -23,8 +28,15 @@ export default class Game extends Phaser.Scene
 		this.scene.run(SceneKeys.GameBackground)
 		this.scene.sendToBack(SceneKeys.GameBackground)
 
-		this.playerShip = this.add.playerShip(origin.x, origin.y, 'ship')
-		this.playerShip.setOrigin(0.5, 0.5)
+		this.playerShip = this.add.playerShip(origin.x, origin.y, TextureKeys.PlayerShip)
+			.useScaledCollider(0.7)
+			.setOrigin(0.5, 0.5)
+
+		const laserPool = this.add.laserPool()
+		this.playerShip.setLaserModule(
+			new LaserModule(laserPool, TextureKeys.PlayerLaser)
+		)
+		// laserPool.spawn(origin.x, origin.y, TextureKeys.PlayerLaser)
 	}
 	
 	update(t: number, dt: number)
