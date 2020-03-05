@@ -4,6 +4,6 @@ declare namespace Phaser.GameObjects
 	{
 		playerShip(x: number, y: number, texture: string): IPlayerShip
 
-		laserPool(): ILaserPool
+		laserPool(config?: Phaser.Types.Physics.Arcade.PhysicsGroupConfig | Phaser.Types.GameObjects.Group.GroupCreateConfig): ILaserPool
 	}
 }

@@ -8,6 +8,8 @@ import LaserModule from '~/game/LaserModule'
 import '~/game/PlayerShip'
 import '~/game/LaserPool'
 
+import Bullet from '~/game/projectiles/Bullet'
+
 export default class Game extends Phaser.Scene
 {
 	private playerShip?: IPlayerShip
@@ -28,15 +30,19 @@ export default class Game extends Phaser.Scene
 		this.scene.run(SceneKeys.GameBackground)
 		this.scene.sendToBack(SceneKeys.GameBackground)
 
+		const laserPool = this.add.laserPool({
+			classType: Bullet
+		})
+
 		this.playerShip = this.add.playerShip(origin.x, origin.y, TextureKeys.PlayerShip)
 			.useScaledCollider(0.7)
 			.setOrigin(0.5, 0.5)
+		
+		this.playerShip.setDepth(1000)
 
-		const laserPool = this.add.laserPool()
 		this.playerShip.setLaserModule(
 			new LaserModule(laserPool, TextureKeys.PlayerLaser)
 		)
-		// laserPool.spawn(origin.x, origin.y, TextureKeys.PlayerLaser)
 	}
 	
 	update(t: number, dt: number)

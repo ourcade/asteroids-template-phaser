@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import LaserModule from './LaserModule'
 
 import throttle from '~/decorators/throttle'
+import IProjectile from '~/types/IProjectile'
 
 declare global
 {
@@ -14,7 +15,7 @@ declare global
 
 		setLaserModule(laserModule: LaserModule): void
 
-		fire(): ILaser | null
+		fire(): IProjectile | null
 
 		update(dt: number): void
 	}
@@ -95,7 +96,7 @@ export default class PlayerShip extends Phaser.Physics.Arcade.Sprite implements 
 		this.laserModule = laserModule
 	}
 
-	fire(): ILaser | null
+	fire(): IProjectile | null
 	{
 		if (!this.laserModule)
 		{
@@ -105,11 +106,23 @@ export default class PlayerShip extends Phaser.Physics.Arcade.Sprite implements 
 		// distance to nose of ship
 		const noseOffset = this.scene.physics.velocityFromRotation(this.rotation, this.width * 0.5)
 
-		return this.laserModule.fireFrom(
+		const laser = this.laserModule.fireFrom(
 			this.x + noseOffset.x,
 			this.y + noseOffset.y,
-			new Phaser.Math.Vector2(1, 0)
+			noseOffset.normalize()
 		)
+
+		const len = this.body.velocity.length()
+		if (len)
+		{
+			const v = laser.physicsBody.velocity.clone().normalize()
+			v.x *= len
+			v.y *= len
+			laser.physicsBody.velocity.x += v.x
+			laser.physicsBody.velocity.y += v.y
+		}
+
+		return laser
 	}
 
 	update(dt: number)
@@ -141,7 +154,7 @@ export default class PlayerShip extends Phaser.Physics.Arcade.Sprite implements 
 		}
 	}
 
-	@throttle(500, { leading: true, trailing: false })
+	@throttle(150, { leading: true, trailing: false })
 	private throttledFire()
 	{
 		this.fire()

@@ -1,3 +1,5 @@
+import IProjectile from '~/types/IProjectile'
+
 export default class LaserModule
 {
 	private pool: ILaserPool
@@ -11,13 +13,20 @@ export default class LaserModule
 
 	fireFrom(x: number, y: number, direction: Phaser.Math.Vector2)
 	{
-		return this.pool.spawn(x, y, this.textureKey)
+		const laser = this.pool.spawn(x, y, this.textureKey)
+
+		laser.fireAt(
+			x + (direction.x * 100),
+			y + (direction.y * 100)
+		)
+
+		return laser
 	}
 
 	update(dt: number)
 	{
 		const activeChildren = this.pool.getChildren()
-			.filter(child => child.active) as ILaser[]
+			.filter(child => child.active) as IProjectile[]
 
 		const scale = this.pool.scene.scale
 		
