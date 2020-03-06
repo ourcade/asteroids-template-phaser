@@ -49,6 +49,8 @@ export default class LaserPool extends Phaser.Physics.Arcade.Group implements IP
 		this.killAndHide(laser)
 
 		this.world.remove(laser.physicsBody)
+
+		laser.physicsBody.reset(0, 0)
 	}
 }
 

@@ -5,14 +5,16 @@ import { TextureKeys } from '~/consts/GameKeys'
 
 import LaserModule from '~/game/LaserModule'
 import AsteroidField from '~/game/AsteroidField'
+import AsteroidPoolMap from '~/game/AsteroidPoolMap'
 
 import IProjectile from '~/types/IProjectile'
+import IAsteroid from '~/types/IAsteroid'
 
 import wrapBounds from '~/utils/wrapBounds'
 
+import { AsteroidSize } from '~/game/AsteroidPool'
 import '~/game/PlayerShip'
 import '~/game/LaserPool'
-import '~/game/AsteroidPool'
 
 export default class Game extends Phaser.Scene
 {
@@ -29,6 +31,12 @@ export default class Game extends Phaser.Scene
 		this.load.image(TextureKeys.AsteroidBig2, 'meteorBrown_big2.png')
 		this.load.image(TextureKeys.AsteroidBig3, 'meteorBrown_big3.png')
 		this.load.image(TextureKeys.AsteroidBig4, 'meteorBrown_big4.png')
+
+		this.load.image(TextureKeys.AsteroidMedium1, 'meteorBrown_med1.png')
+		this.load.image(TextureKeys.AsteroidMedium2, 'meteorBrown_med2.png')
+
+		this.load.image(TextureKeys.AsteroidSmall1, 'meteorBrown_small1.png')
+		this.load.image(TextureKeys.AsteroidSmall2, 'meteorBrown_small2.png')
     }
 
     create()
@@ -41,8 +49,17 @@ export default class Game extends Phaser.Scene
 		this.scene.run(SceneKeys.GameBackground)
 		this.scene.sendToBack(SceneKeys.GameBackground)
 
-		const asteroidPool = this.add.asteroidPool()
-		this.asteroidField = new AsteroidField(asteroidPool, this)
+		const asteroidPoolMap = new AsteroidPoolMap()
+		asteroidPoolMap.set(TextureKeys.AsteroidBig1, this.add.asteroidPool().setAsteroidSize(AsteroidSize.Large))
+		asteroidPoolMap.set(TextureKeys.AsteroidBig2, this.add.asteroidPool().setAsteroidSize(AsteroidSize.Large))
+		asteroidPoolMap.set(TextureKeys.AsteroidBig3, this.add.asteroidPool().setAsteroidSize(AsteroidSize.Large))
+		asteroidPoolMap.set(TextureKeys.AsteroidBig4, this.add.asteroidPool().setAsteroidSize(AsteroidSize.Large))
+		asteroidPoolMap.set(TextureKeys.AsteroidMedium1, this.add.asteroidPool().setAsteroidSize(AsteroidSize.Medium))
+		asteroidPoolMap.set(TextureKeys.AsteroidMedium2, this.add.asteroidPool().setAsteroidSize(AsteroidSize.Medium))
+		asteroidPoolMap.set(TextureKeys.AsteroidSmall1, this.add.asteroidPool().setAsteroidSize(AsteroidSize.Small))
+		asteroidPoolMap.set(TextureKeys.AsteroidSmall2, this.add.asteroidPool().setAsteroidSize(AsteroidSize.Small))
+
+		this.asteroidField = new AsteroidField(asteroidPoolMap, this)
 		this.asteroidField.create()
 
 		this.playerShip = this.add.playerShip(origin.x, origin.y, TextureKeys.PlayerShip)
@@ -55,8 +72,10 @@ export default class Game extends Phaser.Scene
 			new LaserModule(laserPool, TextureKeys.PlayerLaser)
 		)
 
-		this.physics.add.collider(asteroidPool, this.playerShip)
-		this.physics.add.collider(asteroidPool, laserPool, this.laserHitAsteroid, undefined, this)
+		asteroidPoolMap.values.forEach(asteroidPool => {
+			this.physics.add.collider(asteroidPool, this.playerShip!, this.asteroidHitPlayerShip, obj => obj.active, this)
+			this.physics.add.collider(asteroidPool, laserPool, this.laserHitAsteroid, obj => obj.active, this)
+		})
 	}
 	
 	update(t: number, dt: number)
@@ -69,11 +88,19 @@ export default class Game extends Phaser.Scene
 		}
 	}
 
+	private asteroidHitPlayerShip(asteroid: Phaser.GameObjects.GameObject)
+	{
+		// TODO: lose
+		console.log('player hit')
+	}
+
 	private laserHitAsteroid(asteroid: Phaser.GameObjects.GameObject, laser: Phaser.GameObjects.GameObject)
 	{
-		(laser as IProjectile).returnToPool()
+		const projectile = (laser as IProjectile)
+		const direction = projectile.physicsBody.newVelocity.clone().normalize()
+		projectile.returnToPool()
 
-		// TODO: break up asteroid
+		this.asteroidField?.breakAsteroid(asteroid as IAsteroid, direction)
 	}
 
 	private updatePlayerShip(dt: number, bounds: Phaser.Geom.Rectangle)

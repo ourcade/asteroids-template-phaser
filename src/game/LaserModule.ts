@@ -2,10 +2,10 @@ import IProjectile from '~/types/IProjectile'
 
 export default class LaserModule
 {
-	private pool: ILaserPool
+	private pool: IProjectilePool
 	private textureKey: string
 
-	constructor(pool: ILaserPool, textureKey: string)
+	constructor(pool: IProjectilePool, textureKey: string)
 	{
 		this.pool = pool
 		this.textureKey = textureKey

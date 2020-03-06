@@ -1,45 +1,37 @@
 import Phaser from 'phaser'
 
+import IAsteroid from '~/types/IAsteroid'
+import Asteroid from './Asteroid'
+
+export enum AsteroidSize
+{
+	Large,
+	Medium,
+	Small,
+	Dust
+}
+
 declare global
 {
 	interface IAsteroidPool extends Phaser.Physics.Arcade.Group
 	{
-		spawn(x: number, y: number, texture: string): Asteroid
-		despawn(laser: Asteroid): void
+		readonly asteroidSize: AsteroidSize
+		setAsteroidSize(size: AsteroidSize): IAsteroidPool
+
+		spawn(x: number, y: number, texture: string): IAsteroid
+		despawn(laser: IAsteroid): void
 	}
 }
 
-class Asteroid extends Phaser.Physics.Arcade.Sprite
+export default class AsteroidPool extends Phaser.Physics.Arcade.Group implements IAsteroidPool
 {
-	useCircleCollider(radius: number | undefined = undefined, scaleFactor = 1, offsetX = 0, offsetY = 0)
-	{
-		const r = radius || this.width * 0.5
-		const diff = r - (r * scaleFactor)
-		this.body.setCircle(r * scaleFactor, offsetX + diff, offsetY + diff)
+	private _size: AsteroidSize
 
-		return this
+	get asteroidSize()
+	{
+		return this._size
 	}
 
-	useSquareCollider(width: number)
-	{
-		this.body.setSize(width, width)
-
-		return this
-	}
-
-	useScaledCollider(scaleFactor: number)
-	{
-		const w = this.width * scaleFactor
-		const h = this.height * scaleFactor
-
-		this.body.setSize(w, h)
-		
-		return this
-	}
-}
-
-export default class AsteroidPool extends Phaser.Physics.Arcade.Group
-{
 	constructor(world: Phaser.Physics.Arcade.World, scene: Phaser.Scene, config: Phaser.Types.Physics.Arcade.PhysicsGroupConfig | Phaser.Types.GameObjects.Group.GroupCreateConfig = {})
 	{
 		const defaults: Phaser.Types.Physics.Arcade.PhysicsGroupConfig | Phaser.Types.GameObjects.Group.GroupCreateConfig = {
@@ -48,13 +40,22 @@ export default class AsteroidPool extends Phaser.Physics.Arcade.Group
 		}
 
 		super(world, scene, Object.assign(defaults, config))
+
+		this._size = AsteroidSize.Large
+	}
+
+	setAsteroidSize(size: AsteroidSize)
+	{
+		this._size = size
+
+		return this
 	}
 
 	spawn(x: number, y: number, texture: string)
 	{
 		const spawnExisting = this.countActive(false) > 0
 
-		const asteroid: Asteroid = this.get(x, y, texture)
+		const asteroid: IAsteroid = this.get(x, y, texture)
 
 		if (!asteroid)
 		{
@@ -79,11 +80,13 @@ export default class AsteroidPool extends Phaser.Physics.Arcade.Group
 		return asteroid
 	}
 
-	despawn(asteroid: Asteroid)
+	despawn(asteroid: IAsteroid)
 	{
 		this.killAndHide(asteroid)
 
 		this.world.remove(asteroid.body)
+
+		asteroid.body.reset(0, 0)
 	}
 }
 
