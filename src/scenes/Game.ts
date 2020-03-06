@@ -37,6 +37,8 @@ export default class Game extends Phaser.Scene
 
 		this.load.image(TextureKeys.AsteroidSmall1, 'meteorBrown_small1.png')
 		this.load.image(TextureKeys.AsteroidSmall2, 'meteorBrown_small2.png')
+
+		this.load.image(TextureKeys.Beam3, 'beam3.png')
     }
 
     create()
@@ -90,8 +92,33 @@ export default class Game extends Phaser.Scene
 
 	private asteroidHitPlayerShip(asteroid: Phaser.GameObjects.GameObject)
 	{
-		// TODO: lose
-		console.log('player hit')
+		if (!this.playerShip)
+		{
+			return
+		
+		}
+		const x = this.playerShip.x
+		const y = this.playerShip.y
+
+		this.playerShip.destroy()
+
+		const lifespan = 1000
+
+		// TODO: explosion or something and then go to gameover
+		const particles = this.add.particles(TextureKeys.Beam3)
+		particles.setDepth(2000)
+		particles.createEmitter({
+			speed: { min: -100, max: 100 },
+			angle: { min: 0, max: 360 },
+			scale: { start: 1, end: 0 },
+			blendMode: 'SCREEN',
+			lifespan
+		})
+		.explode(50, x, y)
+		
+		this.time.delayedCall(lifespan, () => {
+			this.scene.start(SceneKeys.GameOver)
+		})
 	}
 
 	private laserHitAsteroid(asteroid: Phaser.GameObjects.GameObject, laser: Phaser.GameObjects.GameObject)

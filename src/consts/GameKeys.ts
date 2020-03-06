@@ -12,5 +12,7 @@ export enum TextureKeys
 	AsteroidMedium2 = 'asteroid-medium-2',
 
 	AsteroidSmall1 = 'asteroid-small-1',
-	AsteroidSmall2 = 'asteroid-small-2'
+	AsteroidSmall2 = 'asteroid-small-2',
+
+	Beam3 = 'beam-3'
 }

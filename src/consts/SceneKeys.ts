@@ -2,5 +2,6 @@ export enum SceneKeys
 {
 	TitleScreen = 'titlescreen',
 	GameBackground = 'game-background',
-	Game = 'game'
+	Game = 'game',
+	GameOver = 'game-over'
 }
