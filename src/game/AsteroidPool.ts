@@ -11,10 +11,11 @@ declare global
 
 class Asteroid extends Phaser.Physics.Arcade.Sprite
 {
-	useCircleCollider(radius: number | undefined = undefined, offsetX = 0, offsetY = 0)
+	useCircleCollider(radius: number | undefined = undefined, scaleFactor = 1, offsetX = 0, offsetY = 0)
 	{
 		const r = radius || this.width * 0.5
-		this.body.setCircle(r, offsetX, offsetY)
+		const diff = r - (r * scaleFactor)
+		this.body.setCircle(r * scaleFactor, offsetX + diff, offsetY + diff)
 
 		return this
 	}
@@ -62,14 +63,18 @@ export default class AsteroidPool extends Phaser.Physics.Arcade.Group
 
 		asteroid.emit('on-spawned')
 
-		asteroid.setBounce(1)
-
 		if (spawnExisting)
 		{
 			asteroid.setVisible(true)
 			asteroid.setActive(true)
 			this.world.add(asteroid.body)
 		}
+		else
+		{
+			asteroid.setBounce(1)
+		}
+
+		asteroid.setAngularVelocity(Phaser.Math.Between(-50, 50))
 
 		return asteroid
 	}

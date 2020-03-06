@@ -4,7 +4,11 @@ import { SceneKeys } from '~/consts/SceneKeys'
 import { TextureKeys } from '~/consts/GameKeys'
 
 import LaserModule from '~/game/LaserModule'
+import AsteroidField from '~/game/AsteroidField'
+
 import IProjectile from '~/types/IProjectile'
+
+import wrapBounds from '~/utils/wrapBounds'
 
 import '~/game/PlayerShip'
 import '~/game/LaserPool'
@@ -13,7 +17,7 @@ import '~/game/AsteroidPool'
 export default class Game extends Phaser.Scene
 {
 	private playerShip?: IPlayerShip
-	private asteroidPool?: IAsteroidPool
+	private asteroidField?: AsteroidField
 
 	preload()
     {
@@ -21,7 +25,10 @@ export default class Game extends Phaser.Scene
 		this.load.image(TextureKeys.PlayerShip, 'playerShip3_blue.png')
 		this.load.image(TextureKeys.PlayerLaser, 'laserBlue16.png')
 
+		this.load.image(TextureKeys.AsteroidBig1, 'meteorBrown_big1.png')
+		this.load.image(TextureKeys.AsteroidBig2, 'meteorBrown_big2.png')
 		this.load.image(TextureKeys.AsteroidBig3, 'meteorBrown_big3.png')
+		this.load.image(TextureKeys.AsteroidBig4, 'meteorBrown_big4.png')
     }
 
     create()
@@ -34,36 +41,31 @@ export default class Game extends Phaser.Scene
 		this.scene.run(SceneKeys.GameBackground)
 		this.scene.sendToBack(SceneKeys.GameBackground)
 
-		const laserPool = this.add.laserPool()
-
-		this.asteroidPool = this.add.asteroidPool()
-		this.asteroidPool.spawn(origin.x, 100, TextureKeys.AsteroidBig3)
-			.useCircleCollider()
-
-		// console.dir(a.body)
+		const asteroidPool = this.add.asteroidPool()
+		this.asteroidField = new AsteroidField(asteroidPool, this)
+		this.asteroidField.create()
 
 		this.playerShip = this.add.playerShip(origin.x, origin.y, TextureKeys.PlayerShip)
 			.useScaledCollider(0.7)
 			.setOrigin(0.5, 0.5)
-		
-		this.playerShip.setDepth(1000)
+			.setDepth(1000)
 
+		const laserPool = this.add.laserPool()
 		this.playerShip.setLaserModule(
 			new LaserModule(laserPool, TextureKeys.PlayerLaser)
 		)
 
-		this.physics.add.collider(this.asteroidPool, this.playerShip)
-		this.physics.add.collider(this.asteroidPool, laserPool, this.laserHitAsteroid, undefined, this)
+		this.physics.add.collider(asteroidPool, this.playerShip)
+		this.physics.add.collider(asteroidPool, laserPool, this.laserHitAsteroid, undefined, this)
 	}
 	
 	update(t: number, dt: number)
 	{
-		this.updatePlayerShip(dt)
+		this.updatePlayerShip(dt, this.scale.canvasBounds)
 
-		if (this.asteroidPool)
+		if (this.asteroidField)
 		{
-			const asteroids = this.asteroidPool.getChildren() as Phaser.Physics.Arcade.Sprite[]
-			asteroids.forEach(asteroid => this.wrap(asteroid))
+			this.asteroidField.update(dt)
 		}
 	}
 
@@ -74,7 +76,7 @@ export default class Game extends Phaser.Scene
 		// TODO: break up asteroid
 	}
 
-	private updatePlayerShip(dt: number)
+	private updatePlayerShip(dt: number, bounds: Phaser.Geom.Rectangle)
 	{
 		if (!this.playerShip)
 		{
@@ -82,38 +84,6 @@ export default class Game extends Phaser.Scene
 		}
 
 		this.playerShip.update(dt)
-		this.wrap(this.playerShip)
-	}
-
-	private wrap(object: Phaser.GameObjects.Components.Transform & Phaser.GameObjects.Components.ComputedSize)
-	{
-		if (!object)
-		{
-			return
-		}
-
-		const x = object.x
-		const y = object.y
-
-		const length = Math.max(object.width, object.height)
-		const halfLength = length * 0.5
-
-		if (x < -halfLength)
-		{
-			object.x = this.scale.width + halfLength
-		}
-		else if (x > this.scale.width + halfLength)
-		{
-			object.x = -halfLength
-		}
-
-		if (y < -halfLength)
-		{
-			object.y = this.scale.height + halfLength
-		}
-		else if (y > this.scale.height + halfLength)
-		{
-			object.y = -halfLength
-		}
+		wrapBounds(this.playerShip, bounds)
 	}
 }
