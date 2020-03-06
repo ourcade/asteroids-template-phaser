@@ -3,7 +3,7 @@ import Phaser from 'phaser'
 import IProjectile from '~/types/IProjectile'
 import Laser from './projectiles/Laser'
 
-export default class LaserPool extends Phaser.Physics.Arcade.Group implements IProjectilePool
+export default class ProjectilePool extends Phaser.Physics.Arcade.Group implements IProjectilePool
 {
 	constructor(world: Phaser.Physics.Arcade.World, scene: Phaser.Scene, config: Phaser.Types.Physics.Arcade.PhysicsGroupConfig | Phaser.Types.GameObjects.Group.GroupCreateConfig = {})
 	{
@@ -54,9 +54,9 @@ export default class LaserPool extends Phaser.Physics.Arcade.Group implements IP
 	}
 }
 
-Phaser.GameObjects.GameObjectFactory.register('laserPool', function (config: Phaser.Types.Physics.Arcade.PhysicsGroupConfig | Phaser.Types.GameObjects.Group.GroupCreateConfig = {}) {
+Phaser.GameObjects.GameObjectFactory.register('projectilePool', function (config: Phaser.Types.Physics.Arcade.PhysicsGroupConfig | Phaser.Types.GameObjects.Group.GroupCreateConfig = {}) {
 	// @ts-ignore
-	const pool = new LaserPool(this.scene.physics.world, this.scene, config)
+	const pool = new ProjectilePool(this.scene.physics.world, this.scene, config)
 
 	// @ts-ignore
 	this.updateList.add(pool)

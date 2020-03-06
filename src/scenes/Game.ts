@@ -3,7 +3,7 @@ import Phaser from 'phaser'
 import { SceneKeys } from '~/consts/SceneKeys'
 import { TextureKeys } from '~/consts/GameKeys'
 
-import LaserModule from '~/game/LaserModule'
+import ProjectileModule from '~/game/ProjectileModule'
 import AsteroidField from '~/game/AsteroidField'
 import AsteroidPoolMap from '~/game/AsteroidPoolMap'
 
@@ -14,7 +14,7 @@ import wrapBounds from '~/utils/wrapBounds'
 
 import { AsteroidSize } from '~/game/AsteroidPool'
 import '~/game/PlayerShip'
-import '~/game/LaserPool'
+import '~/game/ProjectilePool'
 
 export default class Game extends Phaser.Scene
 {
@@ -67,14 +67,14 @@ export default class Game extends Phaser.Scene
 			.setOrigin(0.5, 0.5)
 			.setDepth(1000)
 
-		const laserPool = this.add.laserPool()
-		this.playerShip.setLaserModule(
-			new LaserModule(laserPool, TextureKeys.PlayerLaser)
+		const projectilePool = this.add.projectilePool()
+		this.playerShip.setProjectileModule(
+			new ProjectileModule(projectilePool, TextureKeys.PlayerLaser)
 		)
 
 		asteroidPoolMap.values.forEach(asteroidPool => {
 			this.physics.add.collider(asteroidPool, this.playerShip!, this.asteroidHitPlayerShip, obj => obj.active, this)
-			this.physics.add.collider(asteroidPool, laserPool, this.laserHitAsteroid, obj => obj.active, this)
+			this.physics.add.collider(asteroidPool, projectilePool, this.laserHitAsteroid, obj => obj.active, this)
 		})
 	}
 	

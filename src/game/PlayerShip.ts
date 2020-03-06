@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import LaserModule from './LaserModule'
+import ProjectileModule from './ProjectileModule'
 
 import throttle from '~/decorators/throttle'
 import IProjectile from '~/types/IProjectile'
@@ -13,7 +13,7 @@ declare global
 		useSquareCollider(width: number): IPlayerShip
 		useScaledCollider(scaleFactor: number): IPlayerShip
 
-		setLaserModule(laserModule: LaserModule): void
+		setProjectileModule(laserModule: ProjectileModule): void
 
 		fire(): IProjectile | null
 
@@ -43,7 +43,7 @@ export default class PlayerShip extends Phaser.Physics.Arcade.Sprite implements 
 	private turnSpeed = DefaultTurnSpeed
 	private colliderRadius = DefaultColliderRadius
 
-	private laserModule?: LaserModule
+	private projectileModule?: ProjectileModule
 
 	constructor(scene: Phaser.Scene, x: number, y: number, texture: string)
 	{
@@ -91,14 +91,14 @@ export default class PlayerShip extends Phaser.Physics.Arcade.Sprite implements 
 		return this
 	}
 
-	setLaserModule(laserModule: LaserModule)
+	setProjectileModule(projectileModule: ProjectileModule)
 	{
-		this.laserModule = laserModule
+		this.projectileModule = projectileModule
 	}
 
 	fire(): IProjectile | null
 	{
-		if (!this.laserModule)
+		if (!this.projectileModule)
 		{
 			return null
 		}
@@ -106,7 +106,7 @@ export default class PlayerShip extends Phaser.Physics.Arcade.Sprite implements 
 		// distance to nose of ship
 		const noseOffset = this.scene.physics.velocityFromRotation(this.rotation, this.width * 0.5)
 
-		const laser = this.laserModule.fireFrom(
+		const laser = this.projectileModule.fireFrom(
 			this.x + noseOffset.x,
 			this.y + noseOffset.y,
 			noseOffset.normalize()

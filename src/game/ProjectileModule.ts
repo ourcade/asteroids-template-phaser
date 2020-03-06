@@ -1,6 +1,6 @@
 import IProjectile from '~/types/IProjectile'
 
-export default class LaserModule
+export default class ProjectileModule
 {
 	private pool: IProjectilePool
 	private textureKey: string
