@@ -12,4 +12,4 @@ npm run start
 
 ## License
 
-MIT License
+[MIT License](https://github.com/ourcade/asteroids-template-phaser/blob/master/LICENSE)
