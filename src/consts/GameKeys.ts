@@ -1,5 +1,7 @@
 export enum TextureKeys
 {
 	PlayerShip = 'player-ship',
-	PlayerLaser = 'player-laser'
+	PlayerLaser = 'player-laser',
+
+	AsteroidBig3 = 'asteroid-big-3'
 }

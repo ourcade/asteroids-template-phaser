@@ -2,7 +2,8 @@ import IProjectile from '~/types/IProjectile'
 
 export default class Laser extends Phaser.GameObjects.Container implements IProjectile
 {
-	private sprite: Phaser.GameObjects.Sprite // Phaser.GameObjects.Arc
+	private sprite: Phaser.GameObjects.Sprite
+	private pool?: IProjectilePool
 
 	private speed = 500
 
@@ -53,6 +54,26 @@ export default class Laser extends Phaser.GameObjects.Container implements IProj
 
 		const vel = this.scene.physics.velocityFromRotation(targetAngle, this.speed)
 		this.physicsBody.velocity = vel
+	}
+
+	setPool(pool: IProjectilePool)
+	{
+		this.pool = pool
+	}
+
+	returnToPool()
+	{
+		this.pool?.despawn(this)
+	}
+
+	update()
+	{
+		const bounds = this.scene.scale.canvasBounds
+		const rect = this.getBounds()
+		if (!Phaser.Geom.Rectangle.Overlaps(bounds, rect))
+		{
+			this.returnToPool()
+		}
 	}
 
 	private handleOnSpawned()

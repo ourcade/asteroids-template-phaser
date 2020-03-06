@@ -2,6 +2,7 @@ import IProjectile from '~/types/IProjectile'
 
 export default class Bullet extends Phaser.GameObjects.Arc implements IProjectile
 {
+	private pool?: IProjectilePool
 	private speed = 500
 
 	get physicsBody()
@@ -25,5 +26,15 @@ export default class Bullet extends Phaser.GameObjects.Arc implements IProjectil
 
 		const vel = this.scene.physics.velocityFromRotation(targetAngle, this.speed)
 		this.physicsBody.velocity = vel
+	}
+
+	setPool(pool: IProjectilePool)
+	{
+		this.pool = pool
+	}
+
+	returnToPool()
+	{
+		this.pool?.despawn(this)
 	}
 }

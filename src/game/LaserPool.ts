@@ -3,16 +3,7 @@ import Phaser from 'phaser'
 import IProjectile from '~/types/IProjectile'
 import Laser from './projectiles/Laser'
 
-declare global
-{
-	interface ILaserPool extends Phaser.Physics.Arcade.Group
-	{
-		spawn(x: number, y: number, texture: string): IProjectile
-		despawn(laser: IProjectile): void
-	}
-}
-
-export default class LaserPool extends Phaser.Physics.Arcade.Group implements ILaserPool
+export default class LaserPool extends Phaser.Physics.Arcade.Group implements IProjectilePool
 {
 	constructor(world: Phaser.Physics.Arcade.World, scene: Phaser.Scene, config: Phaser.Types.Physics.Arcade.PhysicsGroupConfig | Phaser.Types.GameObjects.Group.GroupCreateConfig = {})
 	{
@@ -22,6 +13,8 @@ export default class LaserPool extends Phaser.Physics.Arcade.Group implements IL
 		}
 
 		super(world, scene, Object.assign(defaults, config))
+
+		this.runChildUpdate = true
 	}
 
 	spawn(x: number, y: number, texture: string)
@@ -42,6 +35,10 @@ export default class LaserPool extends Phaser.Physics.Arcade.Group implements IL
 			laser.setVisible(true)
 			laser.setActive(true)
 			this.world.add(laser.physicsBody)
+		}
+		else
+		{
+			laser.setPool(this)
 		}
 
 		return laser

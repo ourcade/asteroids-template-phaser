@@ -6,4 +6,7 @@ export default interface IProjectile extends Phaser.GameObjects.GameObject, Phas
 	height: number
 
 	fireAt(x: number, y: number)
+
+	setPool(pool: IProjectilePool)
+	returnToPool()
 }
