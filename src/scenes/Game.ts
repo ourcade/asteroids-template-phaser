@@ -101,6 +101,7 @@ export default class Game extends Phaser.Scene
 		const y = this.playerShip.y
 
 		this.playerShip.destroy()
+		this.playerShip = undefined
 
 		const lifespan = 1000
 
