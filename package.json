@@ -25,7 +25,8 @@
 		"@types/lodash": "^4.14.149",
 		"jsx-dom": "^6.4.11",
 		"lodash": "^4.17.15",
-		"phaser": "^3.22.0"
+		"phaser": "^3.22.0",
+		"webfontloader": "^1.6.28"
 	},
 	"parcelCleanPaths": [
 		"dist"

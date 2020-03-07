@@ -1,6 +1,6 @@
-function button(text = 'Play Again') {
+function button(text = 'Back to Title') {
 	return (
-		<button class="button is-success is-large"
+		<button class="button is-info is-large"
 			style="width: 300px"
 		>
 			<span style="font-family: 'Fredoka One'; font-size: 1em">
