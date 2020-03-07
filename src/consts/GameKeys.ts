@@ -14,5 +14,5 @@ export enum TextureKeys
 	AsteroidSmall1 = 'asteroid-small-1',
 	AsteroidSmall2 = 'asteroid-small-2',
 
-	Beam3 = 'beam-3'
+	Particles1 = 'particles-1'
 }

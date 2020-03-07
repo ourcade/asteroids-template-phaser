@@ -38,7 +38,7 @@ export default class Game extends Phaser.Scene
 		this.load.image(TextureKeys.AsteroidSmall1, 'meteorBrown_small1.png')
 		this.load.image(TextureKeys.AsteroidSmall2, 'meteorBrown_small2.png')
 
-		this.load.image(TextureKeys.Beam3, 'beam3.png')
+		this.load.image(TextureKeys.Particles1, 'star_04.png')
     }
 
     create()
@@ -105,13 +105,14 @@ export default class Game extends Phaser.Scene
 		const lifespan = 1000
 
 		// TODO: explosion or something and then go to gameover
-		const particles = this.add.particles(TextureKeys.Beam3)
+		const particles = this.add.particles(TextureKeys.Particles1)
 		particles.setDepth(2000)
 		particles.createEmitter({
 			speed: { min: -100, max: 100 },
 			angle: { min: 0, max: 360 },
-			scale: { start: 1, end: 0 },
+			scale: { start: 0.3, end: 0 },
 			blendMode: 'SCREEN',
+			// tint: 0xff0000,
 			lifespan
 		})
 		.explode(50, x, y)
