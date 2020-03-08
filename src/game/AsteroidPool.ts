@@ -3,13 +3,7 @@ import Phaser from 'phaser'
 import IAsteroid from '~/types/IAsteroid'
 import Asteroid from './Asteroid'
 
-export enum AsteroidSize
-{
-	Large,
-	Medium,
-	Small,
-	Dust
-}
+import { AsteroidSize } from './AsteroidSize'
 
 declare global
 {
@@ -72,7 +66,8 @@ export default class AsteroidPool extends Phaser.Physics.Arcade.Group implements
 		}
 		else
 		{
-			asteroid.setBounce(1)
+			asteroid.setAsteroidSize(this._size)
+			asteroid.setMass(1000)
 		}
 
 		asteroid.setAngularVelocity(Phaser.Math.Between(-50, 50))

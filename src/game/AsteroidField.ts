@@ -3,7 +3,7 @@ import { TextureKeys } from '~/consts/GameKeys'
 import IAsteroid from '~/types/IAsteroid'
 
 import wrapBounds from '~/utils/wrapBounds'
-import { AsteroidSize } from './AsteroidPool'
+import { AsteroidSize } from './AsteroidSize'
 
 const BigAsteroidTextureKeys = [
 	TextureKeys.AsteroidBig1,

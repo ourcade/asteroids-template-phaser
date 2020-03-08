@@ -1,7 +1,8 @@
-import Phaser from 'phaser'
+import Phaser, { Scene } from 'phaser'
 
 import { SceneKeys } from '~/consts/SceneKeys'
 import { TextureKeys } from '~/consts/GameKeys'
+import { GameEvents } from '~/consts/GameEvents'
 
 import ProjectileModule from '~/game/ProjectileModule'
 import AsteroidField from '~/game/AsteroidField'
@@ -12,9 +13,13 @@ import IAsteroid from '~/types/IAsteroid'
 
 import wrapBounds from '~/utils/wrapBounds'
 
-import { AsteroidSize } from '~/game/AsteroidPool'
+import { AsteroidSize } from '~/game/AsteroidSize'
+
+import '~/game/AsteroidPool'
 import '~/game/PlayerShip'
 import '~/game/ProjectilePool'
+
+import Bullet from '~/game/projectiles/Bullet'
 
 export default class Game extends Phaser.Scene
 {
@@ -51,6 +56,8 @@ export default class Game extends Phaser.Scene
 		this.scene.run(SceneKeys.GameBackground)
 		this.scene.sendToBack(SceneKeys.GameBackground)
 
+		this.scene.run(SceneKeys.GameUI)
+
 		const asteroidPoolMap = new AsteroidPoolMap()
 		asteroidPoolMap.set(TextureKeys.AsteroidBig1, this.add.asteroidPool().setAsteroidSize(AsteroidSize.Large))
 		asteroidPoolMap.set(TextureKeys.AsteroidBig2, this.add.asteroidPool().setAsteroidSize(AsteroidSize.Large))
@@ -69,7 +76,9 @@ export default class Game extends Phaser.Scene
 			.setOrigin(0.5, 0.5)
 			.setDepth(1000)
 
-		const projectilePool = this.add.projectilePool()
+		const projectilePool = this.add.projectilePool({
+			classType: Bullet
+		})
 		this.playerShip.setProjectileModule(
 			new ProjectileModule(projectilePool, TextureKeys.PlayerLaser)
 		)
@@ -105,7 +114,7 @@ export default class Game extends Phaser.Scene
 
 		const lifespan = 1000
 
-		// TODO: explosion or something and then go to gameover
+		// explosion then go to gameover
 		const particles = this.add.particles(TextureKeys.Particles1)
 		particles.setDepth(2000)
 		particles.createEmitter({
@@ -119,17 +128,23 @@ export default class Game extends Phaser.Scene
 		.explode(50, x, y)
 		
 		this.time.delayedCall(lifespan, () => {
+			this.scene.stop(SceneKeys.GameBackground)
+			this.scene.stop(SceneKeys.GameUI)
 			this.scene.start(SceneKeys.GameOver)
 		})
 	}
 
-	private laserHitAsteroid(asteroid: Phaser.GameObjects.GameObject, laser: Phaser.GameObjects.GameObject)
+	private laserHitAsteroid(asteroidGO: Phaser.GameObjects.GameObject, laser: Phaser.GameObjects.GameObject)
 	{
 		const projectile = (laser as IProjectile)
 		const direction = projectile.physicsBody.newVelocity.clone().normalize()
 		projectile.returnToPool()
 
-		this.asteroidField?.breakAsteroid(asteroid as IAsteroid, direction)
+		const asteroid = asteroidGO as IAsteroid
+		
+		this.asteroidField?.breakAsteroid(asteroid, direction)
+
+		this.game.events.emit(GameEvents.AsteroidBroken, asteroid)
 	}
 
 	private updatePlayerShip(dt: number, bounds: Phaser.Geom.Rectangle)
