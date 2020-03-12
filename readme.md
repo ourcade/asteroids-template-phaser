@@ -9,6 +9,8 @@ A simple Asteroids template designed for maintainability and to be expandable wi
 
 [Learn more about this template here and get access to a free email course to learn how to make it from scratch!](https://ourcade.co/templates/asteroids-template)
 
+[Play the demo here](https://ourcade.github.io/asteroids-template-phaser/)
+
 ## Quick Start
 
 ```bash
