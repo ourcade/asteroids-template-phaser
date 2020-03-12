@@ -19,8 +19,6 @@ import '~/game/AsteroidPool'
 import '~/game/PlayerShip'
 import '~/game/ProjectilePool'
 
-import Bullet from '~/game/projectiles/Bullet'
-
 export default class Game extends Phaser.Scene
 {
 	private playerShip?: IPlayerShip
@@ -76,9 +74,7 @@ export default class Game extends Phaser.Scene
 			.setOrigin(0.5, 0.5)
 			.setDepth(1000)
 
-		const projectilePool = this.add.projectilePool({
-			classType: Bullet
-		})
+		const projectilePool = this.add.projectilePool()
 		this.playerShip.setProjectileModule(
 			new ProjectileModule(projectilePool, TextureKeys.PlayerLaser)
 		)
